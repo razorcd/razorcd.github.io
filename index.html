@@ -1,0 +1,26 @@
+---
+layout: default
+---
+
+<div class="posts">
+  {% for post in site.posts %}
+    <section class="section summary-section">
+        <article class="post">
+
+        <h1 class="section-title"><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h1>
+
+        <div class="entry summary">
+            {{ post.excerpt }}
+        </div>
+
+        <div class="date">
+            Written on {{ post.date | date: "%B %e, %Y" }}
+        </div>
+
+        </article>
+    </section>
+  {% endfor %}
+</div>
+
+
+
