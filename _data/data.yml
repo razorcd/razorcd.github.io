@@ -3,7 +3,7 @@ sidebar:
     url: 'https://razorcodes.com'
     baseurl: '' #change it according to your repository name
     about: true # set to False or comment line if you want to remove the "How to use?" in the sidebar
-    about-text: 'I am a Full Stack / Backend Developer from Berlin, Germany focusing on distributed cloud systems, mainly using Java, Ruby and JavaScript / Typescript on Linux platforms.'
+    about-text: 'I am a Software Developer from Berlin, Germany focusing on distributed cloud systems, mainly using Java, Ruby and JavaScript / Typescript on Linux platforms.'
     
     # Profile information
     name: Cristian Dugacicu
