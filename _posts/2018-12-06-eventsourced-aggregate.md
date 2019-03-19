@@ -109,7 +109,7 @@ Testing this is simply simulating all possible behaviors. Here is an example of 
         assertThat(rover).isEqualTo(new RoverAggregate("id-01", new RoverAggregate.Location(0,1), RoverAggregate.Orientation.W));
     }
 ```
-The full unit tests for this initial `Rover` class can be found here: 
+The full unit tests for this initial `Rover` class can be found here: [RoverAggregateTest.java](https://github.com/razorcd/java-snippets-and-demo-projects/blob/master/eventsourcedaggregate/src/test/java/demo/stage2eventsourced/RoverAggregateTest.java)
 
 
 ## Adding a repository for this Rover model
@@ -133,7 +133,7 @@ public class RoverRepository {
 
 Notice that on every change, the `save` method is overwriting the previous state of the Rover.
 
-The unit tests for the `RoverRepository` can be found here:
+The unit tests for the `RoverRepository` can be found here: [RoverRepositoryTest.java](https://github.com/razorcd/java-snippets-and-demo-projects/blob/master/eventsourcedaggregate/src/test/java/demo/stage2eventsourced/RoverRepositoryTest.java)
 
 
 ## Transforming the model into an event sourced aggregate
@@ -225,7 +225,7 @@ public class RoverCreatedEvent extends DomainEvent implements Serializable {
 ...
 ```
 
-The implementations for the other event objects can be found here:
+The implementations for the other event objects can be found here: [DomainEvents](https://github.com/razorcd/java-snippets-and-demo-projects/tree/master/eventsourcedaggregate/src/main/java/demo/stage2eventsourced)
 
 We will also need a method where we apply more general `DomainEvents` type and do the pattern matching inside the aggregate. This way we can store events as `DomainEvents` and hide the conversion inside the aggregate.
 
@@ -377,6 +377,6 @@ To go more in depth in this topic check out the [Axon Framework](https://axoniq.
 
 ---
 
-The complete implementation of the aggregate can be found here:
+The complete implementation of the aggregate can be found here: [event-sourced-aggregate](https://github.com/razorcd/java-snippets-and-demo-projects/tree/master/eventsourcedaggregate)
 
 Thanks for reading.
