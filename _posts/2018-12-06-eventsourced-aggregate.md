@@ -109,7 +109,7 @@ Testing this is simply simulating all possible behaviors. Here is an example of 
         assertThat(rover).isEqualTo(new RoverAggregate("id-01", new RoverAggregate.Location(0,1), RoverAggregate.Orientation.W));
     }
 ```
-The full unit tests for this initial `Rover` class can be found here: [RoverAggregateTest.java](https://github.com/razorcd/java-snippets-and-demo-projects/blob/master/eventsourcedaggregate/src/test/java/demo/stage2eventsourced/RoverAggregateTest.java)
+The full unit tests for this initial `Rover` class can be found here: [RoverAggregateTest.java](https://github.com/razorcd/java-snippets-and-demo-projects/blob/master/eventsourcedaggregate/src/test/java/demo/stage2eventsourced/RoverAggregateTest.java){:target="_blank"}
 
 
 ## Adding a repository for this Rover model
@@ -133,7 +133,7 @@ public class RoverRepository {
 
 Notice that on every change, the `save` method is overwriting the previous state of the Rover.
 
-The unit tests for the `RoverRepository` can be found here: [RoverRepositoryTest.java](https://github.com/razorcd/java-snippets-and-demo-projects/blob/master/eventsourcedaggregate/src/test/java/demo/stage2eventsourced/RoverRepositoryTest.java)
+The unit tests for the `RoverRepository` can be found here: [RoverRepositoryTest.java](https://github.com/razorcd/java-snippets-and-demo-projects/blob/master/eventsourcedaggregate/src/test/java/demo/stage2eventsourced/RoverRepositoryTest.java){:target="_blank"}
 
 
 ## Transforming the model into an event sourced aggregate
@@ -225,7 +225,7 @@ public class RoverCreatedEvent extends DomainEvent implements Serializable {
 ...
 ```
 
-The implementations for the other event objects can be found here: [DomainEvents](https://github.com/razorcd/java-snippets-and-demo-projects/tree/master/eventsourcedaggregate/src/main/java/demo/stage2eventsourced)
+The implementations for the other event objects can be found here: [DomainEvents](https://github.com/razorcd/java-snippets-and-demo-projects/tree/master/eventsourcedaggregate/src/main/java/demo/stage2eventsourced){:target="_blank"}
 
 We will also need a method where we apply more general `DomainEvents` type and do the pattern matching inside the aggregate. This way we can store events as `DomainEvents` and hide the conversion inside the aggregate.
 
@@ -373,10 +373,10 @@ It is indeed possible that the number of events applied to an aggregate grows to
 
 The events in the store should not ever be changed. If a wrong behavior was executed (wrong event was generated) we will not remove the created event but instead we will create a new event that fixes the issue. This is very good for auditing since we guarantee 100% history of our past records. Even using physical drives that only allows writing data and not deleting/mutating would be a good solution.
 
-To go more in depth in this topic check out the [Axon Framework](https://axoniq.io/) witch will offer support in building an event sourced system together with a CQRS approach and it is useful for learning the concept too.
+To go more in depth in this topic check out the [Axon Framework](https://axoniq.io/){:target="_blank"} witch will offer support in building an event sourced system together with a CQRS approach and it is useful for learning the concept too.
 
 ---
 
-The complete implementation of the aggregate can be found here: [event-sourced-aggregate](https://github.com/razorcd/java-snippets-and-demo-projects/tree/master/eventsourcedaggregate)
+The complete implementation of the aggregate can be found here: [event-sourced-aggregate](https://github.com/razorcd/java-snippets-and-demo-projects/tree/master/eventsourcedaggregate){:target="_blank"}
 
 Thanks for reading.
