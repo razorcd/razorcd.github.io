@@ -3,11 +3,11 @@ sidebar:
     url: 'https://razorcodes.com'
     baseurl: '' #change it according to your repository name
     about: true # set to False or comment line if you want to remove the "How to use?" in the sidebar
-    about-text: 'I am a Software Developer from Berlin, Germany focusing on distributed cloud systems, mainly using Java, Ruby and JavaScript / Typescript on Linux platforms.'
+    about-text: 'Software Engineer Consultant from Berlin, Germany focused on highly scalable distributed cloud systems on Linux platforms.'
     
     # Profile information
     name: Cristian Dugacicu
-    tagline: Senior Software Engineer
+    tagline: Senior Software Engineer Consultant
     pic: cristian_dugacicu_200x.jpeg  #place a 100x100 picture inside /assets/images/ folder and provide the name of the file below
     
     # Sidebar links
