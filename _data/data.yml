@@ -3,19 +3,20 @@ sidebar:
     url: 'https://razorcodes.com'
     baseurl: '' #change it according to your repository name
     about: true # set to False or comment line if you want to remove the "How to use?" in the sidebar
-    about-text: 'Software Engineer Consultant from Berlin, Germany focused on highly scalable distributed cloud systems on Linux platforms.'
+    about-text: 'Software Engineer from Berlin, Germany focused on highly scalable distributed cloud systems on Linux platforms.'
     
     # Profile information
     name: Cristian Dugacicu
-    tagline: Senior Software Engineer Consultant
-    pic: cristian_dugacicu_200x.jpeg  #place a 100x100 picture inside /assets/images/ folder and provide the name of the file below
+    tagline: Software Engineer
+    # tagline: Software Engineer Consultant
+    pic: cristian_dugacicu_200x_2.jpeg  #place a 100x100 picture inside /assets/images/ folder and provide the name of the file below
     
     # Sidebar links
     email: generated
     linkedin: razorcd
     github: razorcd
     twitter: '@razorcodes'
-    skype: razorcd
+    # skype: razorcd
 
 footer: 
     text: ''
