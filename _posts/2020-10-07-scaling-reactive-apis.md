@@ -4,24 +4,24 @@ title: Scaling reactive APIs
 ---
 
 
-Realtime applications are becoming more and more popular, streams of data travels from one service to another continuously. We want our entire microservices architecture behaving like closed electronic circuits, always reacting on any input changes, triggers, or interruptions. Everything working together like a symphonic orchestra. And if this is not complex enough, we have to continuously grow our businesses, more and more data has to go through our reactive circuit. Services have to process more without appearing slower to the end consumer.
+Realtime applications are becoming more and more popular, streams of data travel from one service to another continuously. We want our entire microservices architecture behaving like closed electronic circuits, always reacting on any input changes, triggers, or interruptions. Everything working together like a symphonic orchestra. And if this is not complex enough, we have to continuously grow our businesses, more and more data has to go through our reactive circuit. Services have to process more without appearing slower to the end consumer.
 Frontend applications are becoming realtime mirrors that reflect any change that our orchestrated backend services do. We can achieve this by streaming data from backend services to frontend applications in realtime, keeping the end user updated with all changes the system is going through.
-It is an impressive evolution of the cloud applications.
-But growth always comes with challenges and one challenge is to make an API service scalable, a service that exposes a reactive API that opens an event stream on each HTTP request and keeps it open for a long period of time, updating the customer with any state change, continuously for many minutes or even hours.
-At [JustEat Takeaway.com](https://www.justeattakeaway.com){:target="_blank"}, the Tracker application uses this reactive API to inform millions of customers about the state of millions of orders every day in realtime.
+It is an impressive evolution of cloud applications.
+But growth always comes with challenges, one of which is to make an API service scalable, a service that exposes a reactive API that opens an event stream on each HTTP request and keeps it open for a long period of time, updating the customer with any state change, continuously for many minutes or even hours.
+At [JustEat Takeaway.com](https://www.justeattakeaway.com){:target="_blank"}, the Tracker application uses this reactive API every day to inform millions of customers about the state of their orders in realtime.
 
 ## How reactive APIs work?
 
-A client does a HTTP request to the server and a data stream is opened where the server can communicate to the frontend. Think WebSockets but only one way, only server emits data to the frontend. Both side of the stream can close the stream and a heartbeat is present too. The client dictates how much data is being sent through the stream by the backend based on how fast it can process it, a feature known as backpressure.
+A client does an HTTP request to the server and a data stream is opened where the server can communicate to the frontend. Think WebSockets but one way, only server emits data to the frontend. Both sides of the stream can close the stream and a heartbeat is present too. The client dictates how much data is being sent through the stream from the backend based on how fast it can process it, a feature known as backpressure.
 
 ## So what is the problem?
 
 On the backend side, data that is published through the API towards the frontend has to also come from a source. In our case it is coming from a number of different partitioned Kafka topics. Because we are talking about high data streams, the input had to be distributed through multiple Kafka partitions to process multiple events in paralel.
 
-In the diagram below I describe architecture we started with:
+In the diagram below I describe the architecture we started with:
 
-1. We receive the events from different partitions (Kafka Topic A: Partition 1, Partition 2, Partition 3). Each partition is sending data only to one Service instance, ensuring that each input event is processed only once only by one Service instance. In this diagram example, `DataUpdatedEvent` is being received trough `Kafka Topic A, Partition 3` and processed by `Service Instance 2`.
-2. In our service, for each input event, we create and update projections, our Customer Aggregate (Service: Instance 1, Instance 2). The projection is persisted in the DB that is shared between all instances. After the projection is updated successfully, we emit the update event to the reactive API so any listening customer gets updated too. Can be same event or better a new event for the query side, but for our example it does not matter. Each customer would receive update only from it's own Aggregate so we have to make sure we channel the right updates only to the customer that it corresponds to.
+1. We receive the events from different partitions (Kafka Topic A: Partition 1, Partition 2, Partition 3). Each partition is sending data only to one Service instance, ensuring that each input event is processed only once by one Service instance. In this diagram example, `DataUpdatedEvent` is being received through `Kafka Topic A, Partition 3` and processed by `Service Instance 2`.
+2. In our service, for each input event, we create and update projections, our Customer Aggregate (Service: Instance 1, Instance 2). The projection is persisted in the DB that is shared between all instances. After the projection is updated successfully, we emit the update event to the reactive API so any listening customer gets updated too. Can be same event or better a new event for the query side, but for our example it does not matter. Each customer would receive updates only from it's own Aggregate so we have to make sure we channel the right updates only to the customer that it corresponds to.
 3. A gateway is in front of the API that takes all Customer requests and directs them to only one Service instance. In this example the `API Gateway` is directing the `/customer1` request to `Service Instance 1`.
 
 *And here is the problem*: if data coming from the input Kafka topics is partitioned and we scale our service horizontally to take advantage of each instance processing only a part of the entire data, how can we ensure that the same service that received the HTTP request also processes the corresponding input partition.
@@ -50,13 +50,13 @@ On the other end, Customer1: `DataUpdatedEvent` comes through `Kafka Topic A, Pa
 
 ## Solutions 
 
-So it is clear that we need a solution to align input and output so `DataUpdatedEvents` have a clear way trough `partition - service instance - event stream listener`.
+So it is clear that we need a solution to align input and output so `DataUpdatedEvents` have a clear way through `partition - service instance - event stream listener`.
 
 *I have tested 3 possible solutions to find the optimal one:*
 
 ## #1 Quick Solution
 
-One quick solution would be to share the `DataUpdatedEvent` between all the `Service instances`, after the projection is updated. We don't know which Service Instance has the customer listener (request) but if we take each `DataUpdatedEvent` and do a fan-out to all the existing services, eventually the instance with the stream listener will get the event and send it trough.
+One quick solution would be to share the `DataUpdatedEvent` between all the `Service instances`, after the projection is updated. We don't know which Service Instance has the customer listener (request) but if we take each `DataUpdatedEvent` and do a fan-out to all the existing services, eventually the instance with the stream listener will get the event and send it through.
 
 In this case Customer1 `DataUpdatedEvent` would travel like this: 
 ```
@@ -68,10 +68,10 @@ Sharing the events between the instances can be done easily using another `inter
 
 This would work well until one point where the `internal Kafka topic` becomes the bottleneck, because we lose part of the partitioning benefits. Even if updating the projections are still done only by one `Service instance`, the `DataUpdatedEvents` still have to be received by all instances from the `internal Kafka topic`, published to the listener by 1 instance and ignored by the other instances.
 
-## #2 Simple Solutions
+## #2 Simple Solution
 
 This was my first approach. Use event sourcing to store the events which form the projection (the Aggregate) and let Reactive Mongo emit it on each save.
-So on a `/customer1` HTTP request, we should open an event stream directly using the Reactive-Mongo Java driver by doing a query to get all events representing `customer1`. This stream would be kept open. On each save of another `Customer1 DataUpdatedEvent` or another event representing the state update, Mongo would also run it against any open stream queries. So publish the `DataUpdatedEvent` trough the existing open stream.
+So on a `/customer1` HTTP request, we should open an event stream directly using the Reactive-Mongo Java driver by doing a query to get all events representing `customer1`. This stream would be kept open. On each save of another `Customer1 DataUpdatedEvent` or another event representing the state update, Mongo would also run it against any open stream queries to publish the `DataUpdatedEvent` through the existing open stream.
 
 In this case Customer1 `DataUpdatedEvent` would travel like this: 
 ```
@@ -79,15 +79,15 @@ Kafka Topic A, Partition 3 --> Service Instance 2 --> Reactive Mongo --> Service
 ```
 You can check my GitHub code example: https://github.com/razorcd/scalable-realtime-tracking/tree/reactive_mongo_partitioned/src/main/java/com/takeaway/tracking
 
-Nice and simple. This would be a good solution for some company internally used dashboards that have a limited number of users.
-Unfortunately this will not scale too much. On each HTTP request, we create a new Reactive Mongo query that would open a separate Mongo connection. This connection would be kept open until the HTTP event stream is kept open too. So our customer size and the Mongo connections will grow 1 to 1. Not scalable at all.
+Nice and simple. This would be a good solution for internal private dashboards that have a limited number of users.
+Unfortunately this will not scale much. On each HTTP request, we create a new Reactive Mongo query that would open a separate Mongo connection. This database connection would be open until the HTTP event stream is also open. So our customer size and the Mongo connections will grow 1 to 1. Not scalable at all.
 We need a better solution that can handle multiplexing.
 
 ## #3 Best scalable solution
 
 So I realized I need a solution that can do multiplexing to the datasource, to use a limited connections pool. A way to add/remove queries on the fly to the existing multiplexed connections. Of course while keeping the partitioning benefits all the way from input Kafka to the reactive API.
 
-After more investigations I came up with a viable solution using `Redis-Streams` (newly released with Redis v5) with a self customized `redis-streams-client`.
+After investigating further I came up with a viable solution using `Redis-Streams` (newly released with Redis v5) with a self customized `redis-streams-client`.
 
 
 ### A little about Redis-Streams first:
@@ -111,9 +111,9 @@ API Controller  -->  Repository(Redis Poller) -------------------->  |          
 
 The first part is persisting the events that will be served later by the API query. To do this we simply create a Kafka listener that will apply each incoming event to the Business Logic. For explaining how the scalable API works, we don't care how the Business Logic works. In the end the Business Logic will emit an event for the Query side of the application (as of CQRS architecture). This event will be saved in Redis to a particular Stream.
 
-We need to define one stream for each customer's data. To do this we will use the `customerId` as the stream Key and the event itself as the value. Every time a record is saved, Redis will create a new stream if the Key doesn't exist already. If the stream exists, the even will be appended to the stream events queue.
+We need to define one stream for each customer's data. To do this we will use the `customerId` as the stream Key and the event itself as the value. Every time a record is saved, Redis will create a new stream if the Key doesn't exist already. If the stream exists, the event will be appended to the stream events queue.
 
-There will be a collection of open API streams form all customers. Each instance will have it's own streams collection, perfect for partitioning.
+There will be a collection of open API streams for all customers. Each instance will have its own streams collection, perfect for partitioning.
 
 Also, there will be a `RedisPuller`, one per instance, that will pull events from Redis streams, querying multiple Redis streams in same query. This puller will run continuously, taking the streams to query from the API streams collections. Also the API collection would change dynamically without interrupting the puller, each new API request would add a stream to the collection and each time a customer closes the stream, it would remove it from the collection.
 
@@ -137,7 +137,7 @@ public class CustomerListener {
 }
 ```
 
- `CustomerRepository` will save the `CustomerUpdatedEvent` to Redis into a Stream. The stream name will be the `id` of the customer defined by the `getStringId()` method. Actually the Query side starts exactly here, this part is completely separated from the business logic.
+ `CustomerRepository` will save the `CustomerUpdatedEvent` to Redis into a Stream. The stream name will be the `id` of the customer defined by the `getStringId()` method. Actually the Query side starts here, this part is completely separated from the business logic.
 
 ```java
 @Repository
@@ -172,7 +172,7 @@ public class CustomerUpdatedEvent implements Identifiable {
 
 ### Part2: Building the Redis puller
 
-Next we build an engine that will allow to subscribe many reactive streams and keep them open, limited by the allocated memory.
+Next we build an engine that will allow us to subscribe to many reactive streams and keep them open, limited by the allocated memory.
 Then as soon as new data arrives in Redis, it pulls the new data and sends it to the correct streams. We will call this engine `RedisPuller`.
 
 There are 2 sides of this puller engine. One to add and remove the API event streams and second to pull real-time data regularly from Redis and publish it to the correct API event stream. Both of these sides will use a Map data structure to keep all open API event streams:
@@ -230,7 +230,7 @@ The Key of the Map is the `customerId` as String. The value is an `EventStream` 
 - `Set<FluxSink<Object>> fluxSinks`: the open API stream collection that is used to publish data to the customer.
 
 
-#### Pull real-time data regularly from Redis-Streams and publish it to the correct API event stream 
+#### Pulling data from Redis-Streams in real-time and publishing to the correct API event stream
 
 Now that we have a list of API event streams opened by the customers, we can use this to pull the data from Redis for all these customers.
 
@@ -238,9 +238,9 @@ First we build an array (`streamArray`) of `StreamOffset` objects, that the Redi
 
 If there are no API streams then we will stop the execution here without doing any Redis connection.
 
-Next it will do one Redis-Stream query to pull first batch of events. Most important part is that the Redis client accepts a list of Streams to pull from. It will pull one batch of data from all the streams in one network request. In case of Redis connection fails, it will close all customer API streams to inform the customers about the error.
+Next it will do one Redis-Stream query to pull first batch of events. The most important part is that the Redis client accepts a list of Streams to pull from. It will pull one batch of data from all the streams in one network request. In case the Redis connection fails, it will close all customer API streams to inform the customers about the error.
 
-Once it has the new events batch from Redis, it iterates over them and publish one by one to the correct stream based on `customerId`. For each published event it will also update offsets in the main `EventStream` collection. This way the next time we call this method it will continue to pull from the last offset it left of.
+Once it has the new events batch from Redis, it iterates over them and publishes one by one to the correct stream based on `customerId`. For each published event it will also update offsets in the main `EventStream` collection. This way the next time we call this method it will continue to pull from the last offset it left off.
 
 ```java
 @RequiredArgsConstructor
@@ -395,19 +395,19 @@ The circuit is complete. Saving and querying events using Redis-Streams work ind
 
 Load testing was a bit challenging. But I managed to simulate over 250 000 simultaneously opened connections on an AWS production environment, so no networking latency. And I was continuously sending and reading events in realtime and measuring if delays are happening between input time and output time. The system could definitely handle more connections.
 
-For load testing the `RedisPuller` integrated with `Redis` part only, I managed to simulate pulling data from Redis from 1 million streams in one single query. I am vary impressed on how fast `Redis-Streams` is.
+For load testing the `RedisPuller` integrated with `Redis` part only, I managed to simulate pulling data from Redis from 1 million streams in one single query. I am very impressed on how fast `Redis-Streams` is.
 
 The architecture of the `RedisPuller` was inspired from `kafka-clients` which also pulls data from a source continuously. Unfortunately Redis is not handling offsets with consumer-groups like Kafka does, that is why I added the offsets in the `EventStream` class.
 
 So far this is running in production for more than 6 months and it was very stable.
 
-The application services can be scaled horizontally to allow data to be distributed. All services will use same Redis server. The next bottleneck point of the system will be Redis connection, for sure. To improve this, sharding Redis server would be the next step. I would suggest adding monitoring/alerting to be prepared when business grows to that point.
+The application services can be scaled horizontally to allow data to be distributed. All services will use same Redis server. The next bottleneck point of the system will be Redis connection, for sure. To improve this, sharding the Redis server would be the next step. I would suggest adding monitoring/alerting to be prepared when business grows to that point.
 
-API event streams can handle backpressure, this can be connected to the `RedisPuller` and configure it to pull data slower from Redis when customer stream indicates to slow down the publishing rate. Of course this has to be done independently on each `EventStream` object.
+API event streams can handle backpressure, this can be connected to the `RedisPuller` and configure to pull data slower from Redis when customer stream indicates to slow down the publishing rate. Of course this has to be done independently on each `EventStream` object.
 
 The implementation I explained here is a simplified version of what I use in production and the Customer domain is just made up. Even so, this example is production ready but it needs some validations, monitoring and logging. There should be a query limiter to not allow more than one query per second. Also Redis needs a size limit cleanup to not consume memory forever. A graceful shutdown protection would be useful to allow the `RedisPuller` thread to finish pulling before interrupting. Gateways and firewalls also need to be updated to manage long running requests.
 
-I hope you enjoyed reading this as much as I enjoyed developing it. Would be great to have this feature implemented directly in the Redis-client directly. Maybe one day I can work on adding this, when time will have a different dimension.
+I hope you enjoyed reading this as much as I enjoyed developing it. Would be great to have this feature implemented directly in the Redis-client directly. Maybe one day I can work on adding this, when the time will have a different dimension.
 
 Thanks for reading. :)
 
