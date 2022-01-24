@@ -415,4 +415,4 @@ Thanks for reading. :)
 ---
 
 
-Thanks to Tracker team and entire Scoober department from [JustEat Takeaway.com](https://www.justeattakeaway.com){:target="_blank"} for all the great support over the time.
+Thanks to Tracker team, CloudOps team and entire Scoober department from [JustEat Takeaway.com](https://www.justeattakeaway.com){:target="_blank"} for all the great support over the time.
