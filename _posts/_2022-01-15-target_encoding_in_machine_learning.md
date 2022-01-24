@@ -1,7 +1,7 @@
----
+<!-- --- -->
 # layout: post
-title: Target Encoding in Machine Learning
----
+# title: Target Encoding in Machine Learning
+<!-- --- -->
 
 This is a research on target encoding and how it can improve or alter the model accuracy. Having a machine learning feature from a dataset that has too many categorical variations can make the ML model over complicated. For example unique fields like IDs or categories with too many possibilities like city names. One good option to still use these fields in a ML model is to aggregate and encode them and we will do this by using target encoding. Let's see how that works in more detail.
 
