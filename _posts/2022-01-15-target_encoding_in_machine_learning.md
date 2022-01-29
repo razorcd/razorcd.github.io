@@ -71,7 +71,8 @@ bill: the const of the order
 ```
 
 Here is the dataset we will work with:
-# |restaurantId|menu_items|bill
+
+  |restaurantId|menu_items|bill
 --|------------|:--------:|:--:
 0 |1001        |3         |50
 1 |1001	       |2         |30
