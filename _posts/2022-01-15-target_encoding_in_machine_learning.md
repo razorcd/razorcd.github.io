@@ -293,6 +293,6 @@ Model max deviation of 50euro: 26% (-1)
 
 <br/>
 
-Don't forget, in science everything is simpler than it seems at first.
+Don't forget, in science everything is simpler than it first seems.
 
 Thanks for reading and happy coding!
