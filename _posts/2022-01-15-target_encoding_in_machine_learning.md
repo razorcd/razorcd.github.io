@@ -83,7 +83,9 @@ Here is the dataset we will work with:
 
 <br/>
 
-1. First let's train a ML model using these `restaurantId` and `menu_items` fields. For `restaurantId` we will use the hot encoding strategy to have an accurate model to compare the other solutions to.
+**Example 1:** 
+
+First let's train a ML model using these `restaurantId` and `menu_items` fields. For `restaurantId` we will use the hot encoding strategy to have an accurate model to compare the other solutions to.
 
 Training data:
 
@@ -120,7 +122,9 @@ Using hot encoding on fields like `restaurantId` is not feasible in production b
 
 <br/>
 
-2. Let's use the same dataset but instead of using `restaurantId` directly, we will do target encoding on the `bill` by adding a new column called `mean_bill` and calculate the mean bill value for each restaurant.
+**Example 2:** 
+
+Let's use the same dataset but instead of using `restaurantId` directly, we will do target encoding on the `bill` by adding a new column called `mean_bill` and calculate the mean bill value for each restaurant.
 
 | # | restaurantId | menu_items | bill | mean_bill
 | --|--------------|:----------:|:----:|---------------
@@ -165,7 +169,9 @@ The high accuracy is the result of having the combination of `menu_items` and `m
 
 <br/>
 
-3. Target encoding works by reducing the number of variations of a field (`restaurantId`) and grouping fields that have a value in common (`mean_bill`). This means that the ML model will have less information in the training data. It will loose the uniqueness of `restaurantId` and would result in duplicated encoded values. This can be noticed when multiple restaurants have the same `mean_bill`. 
+**Example 3:** 
+
+Target encoding works by reducing the number of variations of a field (`restaurantId`) and grouping fields that have a value in common (`mean_bill`). This means that the ML model will have less information in the training data. It will loose the uniqueness of `restaurantId` and would result in duplicated encoded values. This can be noticed when multiple restaurants have the same `mean_bill`. 
 
 Here is an example. We are adding a new row with `restaurantId = 1004` that has `menu_items = 1` and encoded `mean_bill = 30.0`, same as restaurant `1001` on row #2. Except that row #2 has `bill = 10` as Y and row #5 has `bill = 30` as Y.
 
