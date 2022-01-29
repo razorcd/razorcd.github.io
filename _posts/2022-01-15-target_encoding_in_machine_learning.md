@@ -72,7 +72,7 @@ bill: the const of the order
 
 Here is the dataset we will work with:
 
-  |restaurantId|menu_items|bill
+ -|restaurantId|menu_items|bill
 --|------------|:--------:|:--:
 0 |1001        |3         |50
 1 |1001	       |2         |30
@@ -86,6 +86,7 @@ Here is the dataset we will work with:
 1. First let's train a ML model using these `restaurantId` and `menu_items` fields. For `restaurantId` we will use the hot encoding strategy to have an accurate model to compare the other solutions to.
 
 Training data:
+
 # |restaurantId|menu_items
 --|------------|:--------:
 0 | 1001       |3
@@ -95,6 +96,7 @@ Training data:
 4 | 1003       |2
 
 Y:
+
 # | bill
 --|:---:
 0 | 50
