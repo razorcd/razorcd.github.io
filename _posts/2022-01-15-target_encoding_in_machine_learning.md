@@ -3,7 +3,7 @@ layout: post
 title: Target Encoding in Machine Learning
 ---
 
-This is a research on target encoding and how it can improve or alter the model accuracy. Having a machine learning feature from a dataset that has to many categorical variations can make the ML model over complicated. For example unique fields like IDs or categories with too many possibilities like city names. One good option to still use these fields in a ML model is to aggregate and encode them and we will do this by using target encoding. Let's see how that works in more detail.
+I've been getting my hands dirty with Machine Learning lately. I made this research on target encoding in ML and how it can improve or alter the model's accuracy and I want to share it with you. Having a machine learning feature from a dataset that has too many categorical variations can make the ML model over complicated. For example unique fields like IDs or categories with too many possibilities (city names). One good option to still use these fields in a ML model is to aggregate and encode them. We will do this by using target encoding. Let's see how that works in more detail.
 
 This is a self made experiment, no external materials were used as inspiration.
 
@@ -39,7 +39,7 @@ The new calculated mean values are used as a feature for training the model.
 
 New dataset:
 city name | temperature (Y)
-:--------:|:--------------:
+----------|----------------
 21        | 20 
 23        | 22
 22.3      | 24
