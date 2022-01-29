@@ -72,13 +72,13 @@ bill: the const of the order
 
 Here is the dataset we will work with:
 
- -|restaurantId|menu_items|bill
---|------------|:--------:|:--:
-0 |1001        |3         |50
-1 |1001	       |2         |30
-2 |1001	       |1         |10
-3 |1002	       |1         |15
-4 |1003	       |2         |25
+restaurantId|menu_items|bill
+------------|:--------:|:--:
+1001        |3         |50
+1001        |2         |30
+1001        |1         |10
+1002        |1         |15
+1003        |2         |25
  
 
 <br/>
@@ -87,13 +87,13 @@ Here is the dataset we will work with:
 
 Training data:
 
-# |restaurantId|menu_items
---|------------|:--------:
-0 | 1001       |3
-1 | 1001       |2
-2 | 1001       |1
-3 | 1002       |1
-4 | 1003       |2
+| # |restaurantId|menu_items
+| --|------------|:--------:
+| 0 | 1001       |3
+| 1 | 1001       |2
+| 2 | 1001       |1
+| 3 | 1002       |1
+| 4 | 1003       |2
 
 Y:
 
