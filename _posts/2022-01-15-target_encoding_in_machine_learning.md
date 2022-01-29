@@ -72,13 +72,13 @@ bill: the const of the order
 
 Here is the dataset we will work with:
 
-restaurantId|menu_items|bill
-------------|:--------:|:--:
-1001        |3         |50
-1001        |2         |30
-1001        |1         |10
-1002        |1         |15
-1003        |2         |25
+| # |restaurantId|menu_items|bill
+| --|------------|:--------:|:--:
+| 0 |1001        |3         |50
+| 1 |1001        |2         |30
+| 2 |1001        |1         |10
+| 3 |1002        |1         |15
+| 4 |1003        |2         |25
  
 
 <br/>
@@ -97,23 +97,23 @@ Training data:
 
 Y:
 
-# | bill
---|:---:
-0 | 50
-1 | 30
-2 | 10
-3 | 15
-4 | 25
+| # | bill
+| --|:---:
+| 0 | 50
+| 1 | 30
+| 2 | 10
+| 3 | 15
+| 4 | 25
 
 After hot encoding `restaurantId` and training the model, we will apply the same train data to also predict the outputs. The results are very accurate compared to the real bill (Y) values.
 
-# | restaurantId | menu_items | bill | predicted_bill
---|--------------|:----------:|:----:|---------------
-0 | 1001         | 3          |**50**|**50**
-1 | 1001         | 2          |**30**|**30**
-2 | 1001         | 1          |**10**|**10**
-3 | 1002         | 1          |**15**|**15**
-4 | 1003         | 2          |**25**|**25**
+| # | restaurantId | menu_items | bill | predicted_bill
+| --|--------------|:----------:|:----:|---------------
+| 0 | 1001         | 3          |**50**|**50**
+| 1 | 1001         | 2          |**30**|**30**
+| 2 | 1001         | 1          |**10**|**10**
+| 3 | 1002         | 1          |**15**|**15**
+| 4 | 1003         | 2          |**25**|**25**
 
 
 Using hot encoding on fields like `restaurantId` is not feasible in production because these fields can grow indefinitely. Each new `restaurantId` would create a new column in the hot encoded training data. The model would become overwhelmed.
@@ -122,43 +122,43 @@ Using hot encoding on fields like `restaurantId` is not feasible in production b
 
 2. Let's use the same dataset but instead of using `restaurantId` directly, we will do target encoding on the `bill` by adding a new column called `mean_bill` and calculate the mean bill value for each restaurant.
 
-# | restaurantId | menu_items | bill | mean_bill
---|--------------|:----------:|:----:|---------------
-0 | 1001         | 3          |  50  |**30.0**
-1 | 1001         | 2          |  30  |**30.0**
-2 | 1001         | 1          |  10  |**30.0**
-3 | 1002         | 1          |  15  |**15.0**
-4 | 1003         | 2          |  25  |**25.0**
+| # | restaurantId | menu_items | bill | mean_bill
+| --|--------------|:----------:|:----:|---------------
+| 0 | 1001         | 3          |  50  |**30.0**
+| 1 | 1001         | 2          |  30  |**30.0**
+| 2 | 1001         | 1          |  10  |**30.0**
+| 3 | 1002         | 1          |  15  |**15.0**
+| 4 | 1003         | 2          |  25  |**25.0**
 
 We will train only with the following fields:
 
-# | menu_items | mean_bill
---|:----------:|---------------
-0 | 3          |**30.0**
-1 | 2          |**30.0**
-2 | 1          |**30.0**
-3 | 1          |**15.0**
-4 | 2          |**25.0**
+| # | menu_items | mean_bill
+| --|:----------:|---------------
+| 0 | 3          |**30.0**
+| 1 | 2          |**30.0**
+| 2 | 1          |**30.0**
+| 3 | 1          |**15.0**
+| 4 | 2          |**25.0**
 
 And same Y:
 
-# | bill
---|:---:
-0 | 50
-1 | 30
-2 | 10
-3 | 15
-4 | 25
+| # | bill
+| --|:---:
+| 0 | 50
+| 1 | 30
+| 2 | 10
+| 3 | 15
+| 4 | 25
 
 After applying this data to the same ML training logic, here are the results. Comparing `bill` with the model `predicted_bill` we get very accurate results again.
 
-# | restaurantId | menu_items | bill | mean_bill | predicted_bill
---|--------------|:----------:|:----:|:---------:|:-------------:
-0 | 1001         | 3          |  50  |**30.0**   |**50**
-1 | 1001         | 2          |  30  |**30.0**   |**30**
-2 | 1001         | 1          |  10  |**30.0**   |**10**
-3 | 1002         | 1          |  15  |**15.0**   |**15**
-4 | 1003         | 2          |  25  |**25.0**   |**25**
+| # | restaurantId | menu_items | bill | mean_bill | predicted_bill
+| --|--------------|:----------:|:----:|:---------:|:-------------:
+| 0 | 1001         | 3          |  50  |**30.0**   |**50**
+| 1 | 1001         | 2          |  30  |**30.0**   |**30**
+| 2 | 1001         | 1          |  10  |**30.0**   |**10**
+| 3 | 1002         | 1          |  15  |**15.0**   |**15**
+| 4 | 1003         | 2          |  25  |**25.0**   |**25**
 
 
 The high accuracy is the result of having the combination of `menu_items` and `mean_bill` always unique. In a big dataset this is hardly the case, let's see next how duplicated encoded values can affect the outcome.
@@ -169,27 +169,27 @@ The high accuracy is the result of having the combination of `menu_items` and `m
 
 Here is an example. We are adding a new row with `restaurantId = 1004` that has `menu_items = 1` and encoded `mean_bill = 30.0`, same as restaurant `1001` on row #2. Except that row #2 has `bill = 10` as Y and row #5 has `bill = 30` as Y.
 
-# | restaurantId | menu_items | bill | mean_bill
---|--------------|:----------:|:----:|---------------
-0 | 1001         | 3          | 50   |  30.0
-1 | 1001         | 2          | 30   |  30.0
-2 | 1001         | 1          |**10**|**30.0**
-3 | 1002         | 1          | 15   |  15.0
-4 | 1003         | 2          | 25   |  25.0
-5 | 1004         | 1          |**30**|**30.0**
+| # | restaurantId | menu_items | bill | mean_bill
+| --|--------------|:----------:|:----:|---------------
+| 0 | 1001         | 3          | 50   |  30.0
+| 1 | 1001         | 2          | 30   |  30.0
+| 2 | 1001         | 1          |**10**|**30.0**
+| 3 | 1002         | 1          | 15   |  15.0
+| 4 | 1003         | 2          | 25   |  25.0
+| 5 | 1004         | 1          |**30**|**30.0**
 
 So for 2 records with same `menu_items = 1` and `mean_bill = 30` as input, the model will be trained with `bill = 10` and `bill = 30` for output. Even if these bills are from separate restaurants, the model will loose this separation. So it will average it out to `bill = 20`.
 
 And the results after training and predicting confirms this:
 
-# | restaurantId | menu_items | bill | mean_bill | predicted_bill
---|--------------|:----------:|:----:|:---------:|:-------------:
-0 | 1001         |  3         |  50  |  30.0     |  50  
-1 | 1001         |  2         |  30  |  30.0     |  30  
-2 | 1001         |**1**       |**10**|  30.0     |**20**
-3 | 1002         |  1         |  15  |  15.0     |  15  
-4 | 1003         |  2         |  25  |  25.0     |  25  
-5 | 1004         |**1**       |**30**|  30.0     |**20**
+| # | restaurantId | menu_items | bill | mean_bill | predicted_bill
+| --|--------------|:----------:|:----:|:---------:|:-------------:
+| 0 | 1001         |  3         |  50  |  30.0     |  50  
+| 1 | 1001         |  2         |  30  |  30.0     |  30  
+| 2 | 1001         |**1**       |**10**|  30.0     |**20**
+| 3 | 1002         |  1         |  15  |  15.0     |  15  
+| 4 | 1003         |  2         |  25  |  25.0     |  25  
+| 5 | 1004         |**1**       |**30**|  30.0     |**20**
 
 Row #2 and #5 have both predicted `predicted_bill = 20`.
 
