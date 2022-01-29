@@ -38,8 +38,9 @@ Hamburg = 19 / 1 = 19
 The new calculated mean values are used as a feature for training the model. 
 
 New dataset:
+
 city name | temperature (Y)
-----------|----------------
+:--------:|:--------------:
 21        | 20 
 23        | 22
 22.3      | 24
