@@ -205,7 +205,7 @@ Row #2 and #5 have both predicted `predicted_bill = 20`.
 
 Categorical columns with big variations can still be useful if they are target encoded, but rows from different categories can affect each other's results. It can be beneficial to add multiple target encoded columns to reduce the risk of duplications. Besides the `mean_bill`, it can also use `mean_items`, deviation between `bill` and `mean_bill` or any other external inputs to aggregate the rows.
 
-[Source code for this example on Github.](https://github.com/razorcd/ml-training/blob/main/capstone-project/target_encoding/target_encoding_dummy_data.ipynb)
+[Source code for this example on Github.](https://github.com/razorcd/ml-training/blob/main/capstone-project/target_encoding/target_encoding_dummy_data.ipynb){:target="_blank"}
 
 <br/>
 
@@ -289,7 +289,7 @@ MAE: 198 euro (-21)
 Model max deviation of 50euro: 26% (-1)
 ```
 
-[Source code for this project on Github.](https://github.com/razorcd/ml-training/tree/main/capstone-project)
+[Source code for this project on Github.](https://github.com/razorcd/ml-training/tree/main/capstone-project){:target="_blank"}
 
 <br/>
 
